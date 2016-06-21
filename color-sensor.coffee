@@ -5,7 +5,7 @@ led_clock_pin = tessel.port.B.pin[6]
 led_data_pin = tessel.port.B.pin[7]
 
 ColorSensor = require './TCS3414'
-color_sensor = new ColorSensor new port_i2c.I2C ColorSensor.I2C_ADDR
+color_sensor = new ColorSensor new port_i2c.I2C ColorSensor.I2C_ADDRESS
 
 LuxSensor = require './TSL2561'
 lux_sensor = new LuxSensor new port_i2c.I2C LuxSensor.I2C_ADDRESS

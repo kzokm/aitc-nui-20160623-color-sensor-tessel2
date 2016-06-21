@@ -5,7 +5,7 @@ class TCS3414
     @enableADC()
 
   enableADC: ()->
-    tx = new Buffer [TCS3414.REG_CTL, TCS3414.CTL_DAT_INIITIATE]
+    tx = new Buffer [TCS3414.REG_CONTROL, TCS3414.CTL_DAT_INIITIATE]
     @i2c.send tx
 
   setTiming: (data = TCS3414.INTEG_MODE_FREE | TCS3414.PARAM_NOMINAL_INTEGRATION_TIME_12ms)->
@@ -17,11 +17,11 @@ class TCS3414
     @i2c.send tx
 
   setInterrupt: (data = TCS3414.INTR_LEVEL | TCS3414.PERSIST_EVERY)->
-    tx = new Buffer [TCS3414.REG_INT, data]
+    tx = new Buffer [TCS3414.REG_INTERRUPT, data]
     @i2c.send tx
 
   clearInterrupt: ()->
-    tx = new Buffer [TCS3414.CLR_INT]
+    tx = new Buffer [TCS3414.CMD_INTERRUPT_CLEAR]
     @i2c.send tx
 
   setInterruptSource: (data = TCS3414.INT_SOURCE_CLEAR)->
@@ -92,11 +92,11 @@ class TCS3414
           blue: Math.round b
 
   # the I2C address for the color sensor
-  @I2C_ADDR = 0x39
+  @I2C_ADDRESS = 0x39
 
-  @REG_CTL = 0x80
+  @REG_CONTROL = 0x80
   @REG_TIMING = 0x81
-  @REG_INT = 0x82
+  @REG_INTERRUPT = 0x82
   @REG_INT_SOURCE = 0x83
   @REG_ID = 0x84
   @REG_GAIN = 0x87
@@ -106,17 +106,20 @@ class TCS3414
   @REG_HIGH_THRESH_HIGH_BYTE = 0x8B
   # The REG_BLOCK_READ and REG_GREEN_LOW direction are the same
   @REG_BLOCK_READ = 0xCF
-  @REG_GREEN_LOW = 0xD0
-  @REG_GREEN_HIGH = 0xD1
-  @REG_RED_LOW = 0xD2
-  @REG_RED_HIGH = 0xD3
-  @REG_BLUE_LOW = 0xD4
-  @REG_BLUE_HIGH = 0xD5
-  @REG_CLEAR_LOW = 0xD6
-  @REG_CLEAR_HIGH = 0xD7
+  @REG_GREEN_LOW = 0x90
+  @REG_GREEN_HIGH = 0x91
+  @REG_RED_LOW = 0x92
+  @REG_RED_HIGH = 0x93
+  @REG_BLUE_LOW = 0x94
+  @REG_BLUE_HIGH = 0x95
+  @REG_CLEAR_LOW = 0x96
+  @REG_CLEAR_HIGH = 0x97
 
+  # Command Register
+  @CMD_INTERRUPT_CLEAR = 0xE0
+
+  # Control Register
   @CTL_DAT_INIITIATE = 0x03
-  @CLR_INT = 0xE0
 
   # Timing Register
   @SYNC_EDGE = 0x40
