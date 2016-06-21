@@ -1,6 +1,7 @@
 
 class TCS3414
   constructor: (@i2c)->
+    @setGain()
     @enableADC()
 
   enableADC: ()->
@@ -27,25 +28,68 @@ class TCS3414
     tx = new Buffer [TCS3414.REG_INT_SOURCE, data]
     @i2c.send tx
 
-  readRGB: (callback)->
+  readRGB: (callback, is_enabled_led = false)->
     tx = new Buffer [TCS3414.REG_BLOCK_READ]
     @i2c.transfer tx, 8, (err, rx)->
       throw err if err
       raw =
-        green: rx[1] * 256 + rx[0]
-        red: rx[3] * 256 + rx[2]
-        blue: rx[5] * 256 + rx[4]
+        green: g = rx[1] * 256 + rx[0]
+        red: r = rx[3] * 256 + rx[2]
+        blue: b = rx[5] * 256 + rx[4]
         clear: rx[7] * 256 + rx[6]
 
-      scale = 255.0 / Math.max raw.green, raw.red, raw.blue
-      rgb =
-        red: Math.round raw.red * scale
-        green: Math.round raw.green * scale
-        blue: Math.round raw.blue * scale
+      r *= 0.05
+      g *= 0.05
+      b *= 0.05
+
+      if is_enabled_led
+        r *= 1.7
+        b *= 1.35
+
+      max = Math.max r, g, b
+      if max > 255
+        scale = 255.0 / max
+        r *= scale
+        g *= scale
+        b *= scale
+
+      if false and is_enabled_led
+        max = Math.max r, g, b
+        min = Math.min r, g, b
+        is_orange = max == r and g >= 2 * b and g >= 0.2 * r
+        is_pink = max == r and g <= b and b >= 0.2 * r
+
+        if r < 0.6 * max
+          r *= 0.2
+        else if r < 0.8 * max
+          r *= 0.4
+
+        if g < 0.6 * max
+          unless is_orange
+            g *= 0.2
+        else if g < 0.8 * max
+          g *= 0.4
+
+        if b < 0.6 * max
+          if is_orange
+            b *= 0.5
+          unless is_pink
+            b *= 0.2
+        else if b < 0.8 * max
+          b *= 0.4
+
+        min = Math.min r, g, b
+        is_yellow = max == g and r >= 0.85 * max and min == b
+        if is_yellow
+          r = max
+          b *= 0.4
 
       callback
         raw: raw
-        rgb: rgb
+        rgb:
+          red: Math.round r
+          green: Math.round g
+          blue: Math.round b
 
   # the I2C address for the color sensor
   @I2C_ADDR = 0x39
