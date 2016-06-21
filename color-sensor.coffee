@@ -1,8 +1,8 @@
 tessel = require 'tessel'
 port = tessel.port.A
 
-color_sensor =
-  readRGB: (callback)-> callback r: 0, g: 0, b: 0
+ColorSensor = require './TCS3414'
+color_sensor = new ColorSensor new port.I2C ColorSensor.I2C_ADDR
 
 setInterval ->
   color_sensor.readRGB (data)->
