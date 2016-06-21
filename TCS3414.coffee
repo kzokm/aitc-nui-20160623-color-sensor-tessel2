@@ -45,7 +45,7 @@ class TCS3414
 
       callback
         raw: raw
-        rbg: rgb
+        rgb: rgb
 
   # the I2C address for the color sensor
   @I2C_ADDR = 0x39
