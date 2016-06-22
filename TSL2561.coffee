@@ -18,16 +18,17 @@ class TSL2561
   setInterrupt: (data = TSL2561.INTR_DISABLED | TSL2561.PERSIST_EVERY)
 
   readLux: (callback)->
+    self = @
     tx = new Buffer [TSL2561.REG_ADC_0_WORD]
 
-    (i2c = @i2c).transfer tx, 2, (err, rx)->
+    @i2c.transfer tx, 2, (err, rx)->
       throw err if err
       ch0 = rx[1] * 256 + rx[0]
       tx = new Buffer [TSL2561.REG_ADC_1_WORD]
-      i2c.transfer tx, 2, (err, rx)->
+      self.i2c.transfer tx, 2, (err, rx)->
         throw err if err
         ch1 = rx[1] * 256 + rx[0]
-        callback
+        callback.call self,
           raw: [ch0, ch1]
           lux: Math.round calculateLux ch0, ch1, TSL2561.GAIN_1, TSL2561.INTEG_TIME_13ms
 

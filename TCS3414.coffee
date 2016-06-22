@@ -29,6 +29,7 @@ class TCS3414
     @i2c.send tx
 
   readRGB: (callback, is_enabled_led = false)->
+    self = @
     tx = new Buffer [TCS3414.REG_BLOCK_READ]
     @i2c.transfer tx, 8, (err, rx)->
       throw err if err
@@ -84,7 +85,7 @@ class TCS3414
           r = max
           b *= 0.4
 
-      callback
+      callback.call self,
         raw: raw
         rgb:
           red: Math.round r
