@@ -17,6 +17,24 @@ setInterval ->
   color_sensor.readRGB (data)->
     console.log data
     led.setColorRGB data.rgb
-  lux_sensor.readLux (data)->
-    console.log data
+    @latest = data
+
+    lux_sensor.readLux (data)->
+      console.log data
+      @latest = data
 , 1000
+
+
+http = require 'http'
+
+server = http.createServer (request, response)->
+  data =
+    color: color_sensor.latest
+    lux: lux_sensor.latest
+  console.log data
+  response.writeHead 200, 'Content-Type': 'application/json'
+  response.write JSON.stringify data
+  response.end '\r\n'
+
+server.listen 8080, ->
+  console.log 'Server running at http://[tessel-name].local:8080/'
